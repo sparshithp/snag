@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Node Token Authentication
 
 This repo uses JSON Web Tokens and the [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) package to implement token based authentication on a simple Node.js API.
@@ -37,3 +38,6 @@ Send a `GET` request to `http://localhost:8080/api/users` with a header paramete
 You can also send the token as a URL parameter: `http://localhost:8080/api/users?token=YOUR_TOKEN_HERE`
 
 Or you can send the token as a POST parameter of `token`.
+=======
+# Json-Web-Token-Example
+>>>>>>> 962bbd769a92606eb87296f5a839b5c1cc91c031
