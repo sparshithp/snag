@@ -16,7 +16,9 @@ var Player = require('./app/models/player');
 //==================================================================
 var userController = require('./app/controller/user');
 var playerController = require('./app/controller/player');
-var tournamentController = require('./app/controller/tournament');
+var matchController = require('./app/controller/match');
+var teamController = require('./app/controller/team');
+var leagueController = require('./app/controller/league');
 // =================================================================
 // configuration ===================================================
 // =================================================================
@@ -36,7 +38,12 @@ app.use(morgan('dev'));
 // =================================================================
 
 app.post('/signup', userController.signup);
-app.post('/tournaments/add', tournamentController.add);
+app.post('/match/add', matchController.add);
+app.get('/users', function(req, res) {
+	User.find({}, function(err, users) {
+		res.json(users);
+	});
+});
 
 // basic route (http://localhost:8080)
 app.get('/', function(req, res) {
@@ -93,6 +100,11 @@ apiRoutes.use(function(req, res, next) {
 // ---------------------------------------------------------
 // authenticated routes
 // ---------------------------------------------------------
+
+apiRoutes.post('/teams/add', teamController.add);
+apiRoutes.post('/teams/all', teamController.getAll);
+apiRoutes.post('/league/addTeam', leagueController.addTeam); 
+
 apiRoutes.get('/', function(req, res) {
 	res.json({ message: 'Welcome to the coolest API on earth!' });
 });

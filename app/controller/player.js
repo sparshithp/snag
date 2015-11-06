@@ -2,11 +2,6 @@ var Player = require('../models/player');
 var jwt  = require('jsonwebtoken');
 var async = require('async');
 
-var returnTrue = function(){
-	console.log('Player saved successfully');
-	res.json({ success: true });
-};
-
 var callback = function(){};
 
 exports.add = function(req, res){
@@ -19,7 +14,9 @@ exports.add = function(req, res){
 			limitedOversRating: iter.limitedOversRating, 
 			country: iter.country,
 			ipl: iter.ipl,
-			role: iter.role
+			role: iter.role,
+			countryStatus: true,
+			iplStatus: true
 		});
 		players.push(player);
 	}

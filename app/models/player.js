@@ -8,5 +8,7 @@ module.exports = mongoose.model('Player', new Schema({
 	limitedOversRating: Number, 
 	country: String,
 	ipl: String,
-	role: String 
+	role: String,
+	countryStatus: Boolean,
+	iplStatus: Boolean 
 }));
