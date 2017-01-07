@@ -58,10 +58,6 @@ exports.signup = function (req, res) {
         res.status(400).send({message: 'Password length should be minimum 8 characters.'});
         return;
     }
-    if (!req.body) {
-        return res.status(404).send({message: 'Bad Request'});
-    };
-
     var user = new User({
         name: req.body.name,
         password: req.body.password,
@@ -95,7 +91,6 @@ exports.signup = function (req, res) {
 };
 
 exports.signin = function(req, res) {
-    console.log(req.body);
     // middle parameter..
     //check err everywhere
     if(!req.body || !req.body.email){
@@ -113,16 +108,56 @@ exports.signin = function(req, res) {
         }
 
         user.comparePassword(req.body.password, function(err, isMatch){
+            if(err) {
+                return res.status(400).send({ message: 'Encountered an error. Please try again' });
+            }
             if (!isMatch) {
                 return res.status(401).send({ message: 'Invalid credentials' });
             }
-            res.send({
+            res.status(200).send({
                 user: user.email ,
                 token: createToken(req, user)
             });
         });
     });
 };
+
+exports.startMembership = function(req, res) {
+    if(!req.body || !req.body.userId || !req.body.months) {
+        return res.status(400).send({ message: 'Bad request' });
+    }
+    if(req.body.months < 1) {
+        return res.status(400).send({ message: 'Bad request' });
+    }
+    User.findById(req.body.userId, function(err, user){
+        if(err){
+            return res.status(400).send({ message: 'Encountered an error. Please try again' });
+        }
+        if(!user){
+            return res.status(400).send({ message: 'Invalid User Id' });
+        }
+        var membership = {};
+        membership.start = Date.now();
+        membership.end = addMonthsToCurrentDate(req.body.months);
+        user.membership = membership;
+        user.save(function(err){
+           if(err){
+               return res.status(400).send({ message: 'Encountered an error. Please try again' });
+           }
+            return res.status(200).send({ message: 'Membership updated' });
+
+        });
+    })
+};
+
+function addMonthsToCurrentDate(months) {
+    var dt = new Date();
+    var yearToBeAdded = months/12;
+    var monthToBeAdded = months%12;
+    dt.setMonth(dt.getMonth()+monthToBeAdded);
+    dt.setFullYear(dt.getFullYear()+yearToBeAdded);
+    return dt;
+}
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
