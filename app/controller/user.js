@@ -203,7 +203,7 @@ exports.addItemToCart = function(req, res){
 		
 		User.findById(userId, function(err, user){
 	        if(err || user == null){
-	            res.send({message : "Problem retrieving"});
+	            res.send({message : "Problem finding user"});
 	        }else{
 	        	user.cart.push(cartItem);
 	        	user.save(function (err) {
@@ -244,6 +244,7 @@ function getVariant(cart, callback){
 			"itemId" : String,
 			"variantId" : String,
 			"name" : String,
+			"imgUrl" : String,
 			"size" : String,
 			"quantity" : Number,
 			"price" : Number,
@@ -253,11 +254,8 @@ function getVariant(cart, callback){
 			"items" : [I],
 			"totalCost" : Number
 	};
-	
 	response.totalCost =0;
 	response.items = [];
-	
-	console.log(cart);
 	
 	var counter = 0;
 	if(cart == null || cart.length == 0){
@@ -271,19 +269,19 @@ function getVariant(cart, callback){
 		console.log(cartItem.itemId);
 		
 		Item.findById(cartItem.itemId, function(err, item){
-	        if(err){
-	            res.send({message : "Problem retrieving"});
+	        if(err || item == null){
+	            console.log("item not found !!!!!!!!!!")
+	            counter++;
 	        }else{
 	            
 	        	for(var j =0 ; j<item.variants.length; j++){
 	        		var variant = item.variants[j];
 	        		if(variant._id == cartItem.variantId){
 	        			
-	        			console.log("adcdsfdf");
-	    	    		
 	        			I.itemId = cartItem.itemId;
 		        		I.variantId = variant._id;
 		        		I.name = item.name;
+		        		I.imgUrl = item.imgUrl;
 		        		I.size = variant.size;
 		        		I.quantity = cartItem.quantity;
 		        		I.price = variant.salePrice;
@@ -292,16 +290,12 @@ function getVariant(cart, callback){
 		        		response.totalCost = response.totalCost + I.cost;
 	        		}
 	        	}
-	        	
 	        	counter++;
 	        }
 	        if(counter == length){
 				callback(null, response)
 			}
 	    });
-		
-		
 	}
-	
 }
 
