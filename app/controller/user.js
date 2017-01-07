@@ -82,8 +82,8 @@ exports.signup = function (req, res) {
                     console.log(err);
                     res.status(400).send({message: 'Error saving. Please try again'});
                 } else {
+                    console.log("yoyo");
                     res.send({token: createToken(req, user)});
-
                 }
             });
         }
