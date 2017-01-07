@@ -1,5 +1,5 @@
 var User = require('../models/user');
-var User2 = require('../models/user.js');
+var Item = require('../models/Item');
 var jwt = require('jsonwebtoken');
 
 exports.signup = function (req, res) {
@@ -176,31 +176,130 @@ exports.getById = function(req, res){
     });
 };
 
+exports.listAll = function(req, res){
+
+    User.find({}, function(err, user){
+        if(err){
+            res.send({message : "Problem retrieving"});
+        }else{
+            res.send({users: user});
+        }
+    });
+};
+
 exports.addItemToCart = function(req, res){
 	
 	var cartItem = User.CartItem;
 	
-	cartItem.itemId = req.body.itemId;
-	cartItem.variantId = req.body.variantId;
-	cartItem.quantity = req.body.quantity;
-	
-	console.log(req.body.userId);
-	
-	User.findById(req.body.userId, function(err, user){
-        if(err || user == null){
-            res.send({message : "Problem retrieving"});
-        }else{
-        	user.cart.push(cartItem);
-        	user.save(function (err) {
-                if (err) {
-                    console.log(err);
-                    res.status(400).send({message: 'Error saving. Please try again'});
-                } else {
-                    res.send("Item added to cart");
+	if(req.body.itemId == null || req.body.variantId == null){
+		res.send("No item id");
+	}else{
+		
+		cartItem.itemId = req.body.itemId;
+		cartItem.variantId = req.body.variantId;
+		cartItem.quantity = req.body.quantity;
+		
+		User.findById(req.body.userId, function(err, user){
+	        if(err || user == null){
+	            res.send({message : "Problem retrieving"});
+	        }else{
+	        	user.cart.push(cartItem);
+	        	user.save(function (err) {
+	                if (err) {
+	                    console.log(err);
+	                    res.status(400).send({message: 'Error saving. Please try again'});
+	                } else {
+	                    res.send("Item added to cart");
 
-                }
-            });
-        }
-    });
+	                }
+	            });
+	        }
+	    });
+	}
 };
+
+exports.viewCart = function(req, res){
+	
+	 User.findById(req.decoded._id, function(err, user){
+	        if(err || user == null){
+	            res.send({message : "Problem retrieving"});
+	        }else{
+	        	
+	        	getVariant(user.cart, function(err, response){
+	        		if(err){
+	        			console.log(err);
+	        		}else{
+	        			res.send({cart: response});
+	        		}
+	        	});
+	        }
+	    });
+};
+
+function getVariant(cart, callback){
+	
+	var I = {
+			"itemId" : String,
+			"variantId" : String,
+			"name" : String,
+			"size" : String,
+			"quantity" : Number,
+			"price" : Number,
+			"cost" : Number
+	}
+	var response = {
+			"items" : [I],
+			"totalCost" : Number
+	};
+	
+	response.totalCost =0;
+	response.items = [];
+	
+	console.log(cart);
+	
+	var counter = 0;
+	if(cart == null || cart.length == 0){
+		callback(null, response);
+	}
+	var length = cart.length;
+	for(var i=0; i<length; i++){
+		var cartItem = cart[i];
+		
+		console.log(cartItem);
+		console.log(cartItem.itemId);
+		
+		Item.findById(cartItem.itemId, function(err, item){
+	        if(err){
+	            res.send({message : "Problem retrieving"});
+	        }else{
+	            
+	        	for(var j =0 ; j<item.variants.length; j++){
+	        		var variant = item.variants[j];
+	        		if(variant._id == cartItem.variantId){
+	        			
+	        			console.log("adcdsfdf");
+	    	    		
+	        			I.itemId = cartItem.itemId;
+		        		I.variantId = variant._id;
+		        		I.name = item.name;
+		        		I.size = variant.size;
+		        		I.quantity = cartItem.quantity;
+		        		I.price = variant.salePrice;
+		        		I.cost = I.price * cartItem.quantity;
+		        		response.items.push(I);
+		        		response.totalCost = response.totalCost + I.cost;
+	        		}
+	        	}
+	        	
+	        	counter++;
+	        }
+	        if(counter == length){
+				callback(null, response)
+			}
+	    });
+		
+		
+	}
+	
+}
 
