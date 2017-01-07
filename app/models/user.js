@@ -49,4 +49,4 @@ userSchema.methods.comparePassword = function(password, done) {
 };
 
 module.exports = mongoose.model('User', userSchema);
-exports.CartItem = CartItem;
+module.exports.CartItem = CartItem;
