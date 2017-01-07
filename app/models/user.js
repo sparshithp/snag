@@ -19,12 +19,14 @@ var userSchema = new Schema({
         start: Date,
         end: Date
     },
-    cart: [{
-        itemId: String,
-        variantId: String,
-        quantity: Number
-    }]
+    cart: [CartItem]
 });
+
+var CartItem = {
+	itemId:  String,
+	variantId:  String,
+	quantity:  Number
+};
 
 userSchema.pre('save', function(next) {
     var user = this;

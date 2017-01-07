@@ -170,3 +170,13 @@ function createToken(req, user) {
     });
     return token;
 }
+
+exports.addItemToCart = function(req, res){
+	
+		
+		CartItem cartItem = new CartItem();
+		cartItem.itemId = req.body.itemId;
+		cartItem.variantId = req.body.variantId;
+		cartItem.quantity = req.body.quantity;
+		
+};
