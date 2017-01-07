@@ -177,32 +177,30 @@ exports.getById = function(req, res){
 };
 
 exports.addItemToCart = function(req, res){
-		
 	
-		var cartItem = User2.CartItem;
-		
-		cartItem.itemId = req.body.itemId;
-		cartItem.variantId = req.body.variantId;
-		cartItem.quantity = req.body.quantity;
-		
-		console.log(req.body.userId);
-		
-		User.findById(req.body.userId, function(err, user){
-	        if(err || user == null){
-	            res.send({message : "Problem retrieving"});
-	        }else{
-	        	user.cart.push(cartItem);
-	        	user.save(function (err) {
-	                if (err) {
-	                    console.log(err);
-	                    res.status(400).send({message: 'Error saving. Please try again'});
-	                } else {
-	                    res.send("Item added to cart");
+	var cartItem = User.CartItem;
+	
+	cartItem.itemId = req.body.itemId;
+	cartItem.variantId = req.body.variantId;
+	cartItem.quantity = req.body.quantity;
+	
+	console.log(req.body.userId);
+	
+	User.findById(req.body.userId, function(err, user){
+        if(err || user == null){
+            res.send({message : "Problem retrieving"});
+        }else{
+        	user.cart.push(cartItem);
+        	user.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send({message: 'Error saving. Please try again'});
+                } else {
+                    res.send("Item added to cart");
 
-	                }
-	            });
-	        }
-	    });
-		
-		
+                }
+            });
+        }
+    });
 };
+
