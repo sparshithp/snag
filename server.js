@@ -116,12 +116,13 @@ app.get('/items/getById/:id', itemController.getById);
 app.get('/items/listByCategory/:category', itemController.listByCategory);
 app.get('/items/listByBrand/:brand', itemController.listByBrand);
 
+app.get('/users/listAll', userController.listAll);
 apiRoutes.post('/users/addToCart', userController.addItemToCart);
 app.get('/users/getById/:id', userController.getById);
+apiRoutes.get('/users/viewCart', userController.viewCart);
 apiRoutes.post('/order/create', orderController.createOrder);
 apiRoutes.get('/order/listForUser', orderController.listForUser);
 apiRoutes.get('/order/cancel/:orderId', orderController.cancel);
-
 
 app.use('/api', apiRoutes);
 
