@@ -14,6 +14,7 @@ var User   = require('./app/models/user'); // get our mongoose model
 // controllers
 //==================================================================
 var userController = require('./app/controller/user');
+var itemController = require('./app/controller/ItemController');
 // =================================================================
 // configuration ===================================================
 // =================================================================
@@ -107,6 +108,12 @@ apiRoutes.get('/users', function(req, res) {
 apiRoutes.get('/check', function(req, res) {
 	res.json(req.decoded);
 });
+
+app.get('/items/listAll', itemController.listAll);
+app.post('/items/add', itemController.add);
+app.get('/items/getById/:id', itemController.getById);
+app.get('/items/listByCategory/:category', itemController.listByCategory);
+app.get('/items/listByBrand/:brand', itemController.listByBrand);
 
 app.use('/api', apiRoutes);
 
