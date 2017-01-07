@@ -83,8 +83,8 @@ exports.signup = function (req, res) {
                     console.log(err);
                     res.status(400).send({message: 'Error saving. Please try again'});
                 } else {
+                    console.log("yoyo");
                     res.send({token: createToken(req, user)});
-
                 }
             });
         }
@@ -194,12 +194,14 @@ exports.addItemToCart = function(req, res){
 	if(req.body.itemId == null || req.body.variantId == null){
 		res.send("No item id");
 	}else{
-		
+
+		var userId = req.decoded._id;
+
 		cartItem.itemId = req.body.itemId;
 		cartItem.variantId = req.body.variantId;
 		cartItem.quantity = req.body.quantity;
 		
-		User.findById(req.body.userId, function(err, user){
+		User.findById(userId, function(err, user){
 	        if(err || user == null){
 	            res.send({message : "Problem retrieving"});
 	        }else{

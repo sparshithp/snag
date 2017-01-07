@@ -14,6 +14,7 @@ var User   = require('./app/models/user'); // get our mongoose model
 //==================================================================
 var userController = require('./app/controller/user');
 var itemController = require('./app/controller/ItemController');
+var orderController = require('./app/controller/order');
 // =================================================================
 // configuration ===================================================
 // =================================================================
@@ -116,9 +117,10 @@ app.get('/items/listByCategory/:category', itemController.listByCategory);
 app.get('/items/listByBrand/:brand', itemController.listByBrand);
 
 app.get('/users/listAll', userController.listAll);
-app.post('/users/addToCart', userController.addItemToCart);
+apiRoutes.post('/users/addToCart', userController.addItemToCart);
 app.get('/users/getById/:id', userController.getById);
 apiRoutes.get('/users/viewCart', userController.viewCart);
+apiRoutes.post('/order/create', orderController.createOrder);
 
 app.use('/api', apiRoutes);
 
