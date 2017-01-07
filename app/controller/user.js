@@ -177,17 +177,18 @@ exports.getById = function(req, res){
 };
 
 exports.addItemToCart = function(req, res){
-		
-	
-		var cartItem = User2.CartItem;
+
+    var userId = req.decoded._id;
+
+    var cartItem = User2.CartItem;
 		
 		cartItem.itemId = req.body.itemId;
 		cartItem.variantId = req.body.variantId;
 		cartItem.quantity = req.body.quantity;
 		
-		console.log(req.body.userId);
+		console.log(userId);
 		
-		User.findById(req.body.userId, function(err, user){
+		User.findById(userId, function(err, user){
 	        if(err || user == null){
 	            res.send({message : "Problem retrieving"});
 	        }else{

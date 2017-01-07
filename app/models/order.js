@@ -15,8 +15,8 @@ var orderSchema = new Schema({
     items: [{
         itemId: String,
         size: String,
-        salePrice: String,
-        mrp: String,
+        salePrice: Number,
+        mrp: Number,
         quantity: String
     }],
     cost: Number,
