@@ -1,61 +1,137 @@
 var User = require('../models/user');
-var jwt  = require('jsonwebtoken');
+var jwt = require('jsonwebtoken');
 
-exports.signup = function(req, res) {
-	// create a sample user
-	var user = new User({ 
-		name: req.body.name, 
-		password: req.body.password,
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		addressOne: req.body.addressOne,
-		addressTwo: req.body.addressTwo,
-		city: req.body.city,
-		state: req.body.state,
-		country: req.body.country,
-		zip: req.body.zip,
-		email: req.body.email,
-		admin: false
-	});
-	user.save(function(err) {
-		if (err) throw err;
+exports.signup = function (req, res) {
+    // create a sample user
+    if(!req.body){
+        res.status(400).send({message: 'Required fields missing'});
+    }
+    var name = req.body.name,
+        password = req.body.password,
+        streetAddress = req.body.streetAddress,
+        area = req.body.area,
+        city = req.body.city,
+        zip = req.body.zip,
+        email = req.body.email,
+        phone = req.body.phone;
 
-		console.log('User saved successfully');
-		res.json({ success: true });
-	});
+
+    if(!name || name.trim()==""){
+        res.status(400).send({message: 'Please input full name'});
+        return;
+    }
+    if(!email || email.trim()==""){
+        res.status(400).send({message: 'Please input valid email'});
+        return;
+    }
+    if(!password || password.trim()==""){
+        res.status(400).send({message: 'Please input valid password'});
+        return;
+    }
+    if(!phone || phone.trim()==""){
+        res.status(400).send({message: 'Please input valid phone number'});
+        return;
+    }
+    if(!streetAddress || streetAddress.trim()==""){
+        res.status(400).send({message: 'Please input valid address'});
+        return;
+    }
+    if(!city || city.trim()==""){
+        res.status(400).send({message: 'Please input valid city'});
+        return;
+    }
+    if(!zip || zip.trim()==""){
+        res.status(400).send({message: 'Please input valid zip code'});
+        return;
+    }
+    if(!area || area.trim()==""){
+        res.status(400).send({message: 'Please input valid area'});
+        return;
+    }
+
+    email = email.toLowerCase();
+    if(!validateEmail(email)){
+        res.status(400).send({message: 'Please enter the correct email.'});
+        return;
+    }
+    if(password.length <8){
+        res.status(400).send({message: 'Password length should be minimum 8 characters.'});
+        return;
+    }
+    if (!req.body) {
+        return res.status(404).send({message: 'Bad Request'});
+    };
+
+    var user = new User({
+        name: req.body.name,
+        password: req.body.password,
+        streetAddress: req.body.streetAddress,
+        area: req.body.area,
+        city: req.body.city,
+        zip: req.body.zip,
+        email: req.body.email,
+        phone: req.body.phone,
+        admin: false
+    });
+
+    User.findOne({email: email}, function(err, existingUser){
+        if(err){
+            res.status(400).send({message: 'Network error. Please try again'});
+        } else if(existingUser){
+            res.status(400).send({message: 'User already exists'});
+        }else {
+            user.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send({message: 'Error saving. Please try again'});
+                } else {
+                    res.send({token: createToken(req, user)});
+
+                }
+            });
+        }
+    });
+
 };
 
 exports.signin = function(req, res) {
-	// find the user
-	User.findOne({
-		name: req.body.name
-	}, function(err, user) {
+    console.log(req.body);
+    // middle parameter..
+    //check err everywhere
+    if(!req.body || !req.body.email){
+        return res.status(400).send({message: 'Required fields missing'});
+    }
 
-		if (err) throw err;
+    var email = req.body.email.toLowerCase();
 
-		if (!user) {
-			res.json({ success: false, message: 'Authentication failed. User not found.' });
-		} else if (user) {
+    User.findOne({ email: email }, '+password', function(err, user){
+        if(err){
+            return res.status(400).send({ message: 'Encountered an error. Please try again' });
+        }
+        if (!user) {
+            return res.status(401).send({ message: 'Invalid credentials' });
+        }
 
-			// check if password matches
-			if (user.password != req.body.password) {
-				res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-			} else {
-
-				// if user is found and password is right
-				// create a token
-				var token = jwt.sign(user, req.app.get('superSecret'), {
-					expiresInMinutes: 1440 // expires in 24 hours
-				});
-
-				res.json({
-					success: true,
-					message: 'Enjoy your token!',
-					token: token
-				});
-			}		
-
-		}
-
-	});
+        user.comparePassword(req.body.password, function(err, isMatch){
+            if (!isMatch) {
+                return res.status(401).send({ message: 'Invalid credentials' });
+            }
+            res.send({
+                user: user.email ,
+                token: createToken(req, user)
+            });
+        });
+    });
 };
+
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+function createToken(req, user) {
+    var token = jwt.sign(user, req.app.get('superSecret'), {
+        expiresIn : 60*60*24
+    });
+    return token;
+}

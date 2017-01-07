@@ -38,6 +38,7 @@ app.get('/users', function(req, res) {
 		res.json(users);
 	});
 });
+app.post('/login', userController.signin);
 
 // basic route (http://localhost:8080)
 app.get('/', function(req, res) {
@@ -53,7 +54,6 @@ var apiRoutes = express.Router();
 // authentication (no middleware necessary since this isnt authenticated)
 // ---------------------------------------------------------
 // http://localhost:8080/api/authenticate
-apiRoutes.post('/authenticate', userController.signin);
 
 // ---------------------------------------------------------
 // route middleware to authenticate and check token
