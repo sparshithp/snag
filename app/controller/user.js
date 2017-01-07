@@ -166,7 +166,7 @@ function createToken(req, user) {
 exports.addItemToCart = function(req, res){
 	
 		
-		CartItem cartItem = new CartItem();
+		var cartItem = new CartItem();
 		cartItem.itemId = req.body.itemId;
 		cartItem.variantId = req.body.variantId;
 		cartItem.quantity = req.body.quantity;

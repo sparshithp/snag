@@ -2,6 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcryptjs');
 
+var CartItem = {
+		itemId:  String,
+		variantId:  String,
+		quantity:  Number
+	};
 
 var userSchema = new Schema({
     name: String,
@@ -22,11 +27,7 @@ var userSchema = new Schema({
     cart: [CartItem]
 });
 
-var CartItem = {
-	itemId:  String,
-	variantId:  String,
-	quantity:  Number
-};
+
 
 userSchema.pre('save', function(next) {
     var user = this;
@@ -48,3 +49,4 @@ userSchema.methods.comparePassword = function(password, done) {
 };
 
 module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('CartItem', CartItem);
