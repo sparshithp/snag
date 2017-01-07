@@ -85,6 +85,9 @@ function calculateCost(cart, callback) {
         orderedItem.itemId = item.itemId;
         orderedItem.quantity = item.quantity;
         Item.findById(item.itemId, function (err, item) {
+            if(!item){
+                return res.status(400).send({message: 'Item not found.'});
+            }
             for (var j = 0; j < item.variants.length; j++) {
                 var variant = item.variants[j];
                 if (variantId == variant._id) {
