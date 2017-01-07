@@ -107,6 +107,23 @@ exports.cancel = function(req, res){
     });
 };
 
+exports.getOrder = function(req, res){
+    var userId = req.decoded._id;
+    var orderId = req.params.orderId;
+    if(!orderId){
+        return res.status(400).send({message: 'Invalid order number.'});
+    }
+    Order.findOne({userId: userId, _id:orderId}, function(err, order){
+        if(err){
+            return res.status(404).send({message: 'Encountered an error. Please try again.'});
+        }
+        if(!order){
+            return res.status(400).send({message: 'Wrong order number.'});
+        }
+        res.status(200).send({order: order});
+    });
+};
+
 function calculateCost(cart, callback) {
 
     var orderedItems = [];
