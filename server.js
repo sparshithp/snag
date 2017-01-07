@@ -123,6 +123,7 @@ app.get('/users/getById/:id', userController.getById);
 apiRoutes.get('/users/viewCart', userController.viewCart);
 apiRoutes.post('/order/create', orderController.createOrder);
 apiRoutes.get('/order/listForUser', orderController.listForUser);
+apiRoutes.get('/order/get/:orderId', orderController.getOrder);
 apiRoutes.get('/order/cancel/:orderId', orderController.cancel);
 
 app.use('/api', apiRoutes);
