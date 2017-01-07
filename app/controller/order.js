@@ -57,7 +57,16 @@ exports.createOrder = function (req, res) {
                     if (err) {
                         return res.status(400).send({message: 'Encountered an error. Please try again.'});
                     }
-                    return res.status(200).send({order: order});
+                    res.status(200).send({order: order});
+                    user.cart = [];
+                    user.save(function(err){
+                       if(err){
+                           console.log(err);
+                       }else{
+                           console.log("Saved");
+                       }
+
+                    });
                 });
             }
         });
