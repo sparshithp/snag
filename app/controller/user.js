@@ -137,8 +137,9 @@ exports.startMembership = function(req, res) {
             return res.status(400).send({ message: 'Invalid User Id' });
         }
         var membership = {};
-        membership.start = Date.now();
-        membership.end = addMonthsToCurrentDate(req.body.months);
+        var currentDate = new Date();
+        membership.start = currentDate;
+        membership.end = currentDate.setMonth(currentDate.getMonth()+req.body.months);
         user.membership = membership;
         user.save(function(err){
            if(err){
@@ -149,15 +150,6 @@ exports.startMembership = function(req, res) {
         });
     })
 };
-
-function addMonthsToCurrentDate(months) {
-    var dt = new Date();
-    var yearToBeAdded = months/12;
-    var monthToBeAdded = months%12;
-    dt.setMonth(dt.getMonth()+monthToBeAdded);
-    dt.setFullYear(dt.getFullYear()+yearToBeAdded);
-    return dt;
-}
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
