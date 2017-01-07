@@ -65,10 +65,44 @@ exports.createOrder = function (req, res) {
                        }else{
                            console.log("Saved");
                        }
-
                     });
                 });
             }
+        });
+    });
+};
+
+
+exports.listForUser = function(req, res){
+    var userId = req.decoded._id;
+    Order.find({userId: userId}, function(err, orders){
+       if(err){
+           return res.status(404).send({message: 'Encountered an error. Please try again.'});
+
+       }
+       res.status(200).send({orders: orders});
+    });
+};
+
+exports.cancel = function(req, res){
+    var userId = req.decoded._id;
+    var orderId = req.params.orderId;
+    if(!orderId){
+        return res.status(400).send({message: 'Invalid order number.'});
+    }
+    Order.findOne({userId: userId, _id:orderId}, function(err, order){
+       if(err){
+           return res.status(404).send({message: 'Encountered an error. Please try again.'});
+       }
+        if(!order){
+            return res.status(400).send({message: 'Wrong order number.'});
+        }
+        order.status = "Cancelled";
+        order.save(function(err){
+           if(err){
+               return res.status(404).send({message: 'Encountered an error. Please try again.'});
+           }
+            res.status(200).send({message: 'Cancelled'});
         });
     });
 };
