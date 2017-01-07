@@ -1,4 +1,5 @@
 var User = require('../models/user');
+var User2 = require('../models/user.js');
 var jwt = require('jsonwebtoken');
 
 exports.signup = function (req, res) {
@@ -164,15 +165,30 @@ function createToken(req, user) {
     return token;
 }
 
+exports.getById = function(req, res){
+
+    User.findById(req.params.id, function(err, user){
+        if(err){
+            res.send({message : "Problem retrieving"});
+        }else{
+            res.send({user: user});
+        }
+    });
+};
+
 exports.addItemToCart = function(req, res){
 		
-		var cartItem = new User.CartItem();
+	
+		var cartItem = User2.CartItem;
+		
 		cartItem.itemId = req.body.itemId;
 		cartItem.variantId = req.body.variantId;
 		cartItem.quantity = req.body.quantity;
 		
+		console.log(req.body.userId);
+		
 		User.findById(req.body.userId, function(err, user){
-	        if(err){
+	        if(err || user == null){
 	            res.send({message : "Problem retrieving"});
 	        }else{
 	        	user.cart.push(cartItem);
