@@ -10,15 +10,10 @@ var mongoose    = require('mongoose');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 var User   = require('./app/models/user'); // get our mongoose model
-var Player = require('./app/models/player');
 //==================================================================
 // controllers
 //==================================================================
 var userController = require('./app/controller/user');
-var playerController = require('./app/controller/player');
-var matchController = require('./app/controller/match');
-var teamController = require('./app/controller/team');
-var leagueController = require('./app/controller/league');
 // =================================================================
 // configuration ===================================================
 // =================================================================
@@ -38,7 +33,6 @@ app.use(morgan('dev'));
 // =================================================================
 
 app.post('/signup', userController.signup);
-app.post('/match/add', matchController.add);
 app.get('/users', function(req, res) {
 	User.find({}, function(err, users) {
 		res.json(users);
@@ -60,7 +54,6 @@ var apiRoutes = express.Router();
 // ---------------------------------------------------------
 // http://localhost:8080/api/authenticate
 apiRoutes.post('/authenticate', userController.signin);
-apiRoutes.post('/players/add', playerController.add);
 
 // ---------------------------------------------------------
 // route middleware to authenticate and check token
@@ -100,10 +93,6 @@ apiRoutes.use(function(req, res, next) {
 // ---------------------------------------------------------
 // authenticated routes
 // ---------------------------------------------------------
-
-apiRoutes.post('/teams/add', teamController.add);
-apiRoutes.post('/teams/all', teamController.getAll);
-apiRoutes.post('/league/addTeam', leagueController.addTeam); 
 
 apiRoutes.get('/', function(req, res) {
 	res.json({ message: 'Welcome to the coolest API on earth!' });
