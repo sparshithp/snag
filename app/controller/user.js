@@ -67,7 +67,8 @@ exports.signup = function (req, res) {
         zip: req.body.zip,
         email: req.body.email,
         phone: req.body.phone,
-        admin: false
+        admin: false,
+        cart: []
     });
 
     User.findOne({email: email}, function(err, existingUser){
@@ -164,11 +165,28 @@ function createToken(req, user) {
 }
 
 exports.addItemToCart = function(req, res){
-	
 		
-		var cartItem = new CartItem();
+		var cartItem = new User.CartItem();
 		cartItem.itemId = req.body.itemId;
 		cartItem.variantId = req.body.variantId;
 		cartItem.quantity = req.body.quantity;
+		
+		User.findById(req.body.userId, function(err, user){
+	        if(err){
+	            res.send({message : "Problem retrieving"});
+	        }else{
+	        	user.cart.push(cartItem);
+	        	user.save(function (err) {
+	                if (err) {
+	                    console.log(err);
+	                    res.status(400).send({message: 'Error saving. Please try again'});
+	                } else {
+	                    res.send("Item added to cart");
+
+	                }
+	            });
+	        }
+	    });
+		
 		
 };

@@ -115,6 +115,9 @@ app.get('/items/getById/:id', itemController.getById);
 app.get('/items/listByCategory/:category', itemController.listByCategory);
 app.get('/items/listByBrand/:brand', itemController.listByBrand);
 
+app.post('/users/addToCart', userController.addItemToCart);
+
+
 app.use('/api', apiRoutes);
 
 // =================================================================
