@@ -118,6 +118,7 @@ app.get('/items/listByBrand/:brand', itemController.listByBrand);
 
 app.get('/users/listAll', userController.listAll);
 apiRoutes.post('/users/addToCart', userController.addItemToCart);
+apiRoutes.post('/users/updateCart', userController.updateCart);
 app.get('/users/getById/:id', userController.getById);
 apiRoutes.get('/users/viewCart', userController.viewCart);
 apiRoutes.post('/order/create', orderController.createOrder);

@@ -220,6 +220,33 @@ exports.addItemToCart = function(req, res){
 	}
 };
 
+exports.updateCart = function(req, res){
+	
+	
+	if(req.body.cart == null ){
+		res.send("No cart");
+	}else{
+
+		var userId = req.decoded._id;
+
+		User.findById(userId, function(err, user){
+	        if(err || user == null){
+	            res.send({message : "Problem finding user"});
+	        }else{
+	        	user.cart = req.body.cart;
+	        	user.save(function (err) {
+	                if (err) {
+	                    console.log(err);
+	                    res.status(400).send({message: 'Error saving. Please try again'});
+	                } else {
+	                    res.send("Cart updated");
+	                }
+	            });
+	        }
+	    });
+	}
+};
+
 exports.viewCart = function(req, res){
 	
 	 User.findById(req.decoded._id, function(err, user){
