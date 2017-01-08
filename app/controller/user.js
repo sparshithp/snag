@@ -176,6 +176,33 @@ exports.getById = function(req, res){
     });
 };
 
+exports.updateProfile = function(req, res){
+	
+	var userId = req.decoded._id;
+	User.findById(userId, function(err, user){
+        if(err || user == null){
+            res.send({message : "Problem finding user info"});
+        }else{
+
+            user.streetAddress = req.body.streetAddress;
+            user.area = req.body.area;
+            user.city = req.body.city;
+            user.zip = req.body.zip;
+            
+            user.phone = req.body.phone;
+
+            user.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send({message: 'Error saving. Please try again'});
+                } else {
+                    res.send("profile updated");
+                }
+            });
+        }
+    });
+};
+
 exports.listAll = function(req, res){
 
     User.find({}, function(err, user){
