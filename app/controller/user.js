@@ -219,7 +219,7 @@ exports.addItemToCart = function(req, res){
 	var cartItem = User.CartItem;
 	
 	if(req.body.itemId == null || req.body.variantId == null){
-		res.send("No item id");
+		res.status(400).send("No item id");
 	}else{
 
 		var userId = req.decoded._id;
@@ -238,8 +238,7 @@ exports.addItemToCart = function(req, res){
 	                    console.log(err);
 	                    res.status(400).send({message: 'Error saving. Please try again'});
 	                } else {
-	                    res.send("Item added to cart");
-
+	                    res.status(200).send("Item added to cart");
 	                }
 	            });
 	        }
