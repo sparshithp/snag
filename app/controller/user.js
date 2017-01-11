@@ -118,7 +118,7 @@ exports.signin = function(req, res) {
                 return res.status(401).send({ message: 'Invalid credentials' });
             }
             
-            var welcomeTip = "Welcome " + user.name + ", You have saved "+ user.moneySaved + " so far ";
+            var welcomeTip = "Welcome " + user.name + ", You have saved "+ user.moneySaved + "Rs so far ";
             
             res.status(200).send({
                 user: user.email ,
