@@ -205,6 +205,15 @@ exports.updateProfile = function(req, res){
 
 exports.listAll = function(req, res){
 
+//	User.paginate({}, 1, 3, function(error, pageCount, paginatedResults) {
+//		  if (error) {
+//		    console.error(error);
+//		  } else {
+//		    console.log('Pages:', pageCount);
+//		    res.send({users: user});
+//		  }
+//		});
+	
     User.find({}, function(err, user){
         if(err){
             res.send({message : "Problem retrieving"});
@@ -275,12 +284,14 @@ exports.updateCart = function(req, res){
 
 exports.viewCart = function(req, res){
 	
+	console.log(req.decoded._id);
+	
 	 User.findById(req.decoded._id, function(err, user){
 	        if(err || user == null){
 	            res.send({message : "Problem retrieving"});
 	        }else{
 	        	
-	        	getVariant(user.cart, function(err, response){
+	        	getVariant2(user.cart, function(err, response){
 	        		if(err){
 	        			console.log(err);
 	        		}else{
@@ -291,7 +302,7 @@ exports.viewCart = function(req, res){
 	    });
 };
 
-function getVariant(cart, callback){
+function getVariant2(cart, callback){
 	
 	var I = {
 			"itemId" : String,
@@ -307,48 +318,74 @@ function getVariant(cart, callback){
 			"items" : [I],
 			"totalCost" : Number
 	};
+	
 	response.totalCost =0;
 	response.items = [];
 	
-	var counter = 0;
 	if(cart == null || cart.length == 0){
 		callback(null, response);
 	}
+
+	var itemIdSet = [];
+	
 	var length = cart.length;
 	for(var i=0; i<length; i++){
-		var cartItem = cart[i];
-		
-		console.log(cartItem);
-		console.log(cartItem.itemId);
-		
-		Item.findById(cartItem.itemId, function(err, item){
-	        if(err || item == null){
-	            console.log("item not found !!!!!!!!!!")
-	            counter++;
-	        }else{
-	            
-	        	for(var j =0 ; j<item.variants.length; j++){
-	        		var variant = item.variants[j];
-	        		if(variant._id == cartItem.variantId){
-	        			
-	        			I.itemId = cartItem.itemId;
-		        		I.variantId = variant._id;
-		        		I.name = item.name;
-		        		I.imgUrl = item.imgUrl;
-		        		I.size = variant.size;
-		        		I.quantity = cartItem.quantity;
-		        		I.price = variant.salePrice;
-		        		I.cost = I.price * cartItem.quantity;
-		        		response.items.push(I);
-		        		response.totalCost = response.totalCost + I.cost;
-	        		}
-	        	}
-	        	counter++;
-	        }
-	        if(counter == length){
-				callback(null, response)
-			}
-	    });
+		var itemId = cart[i].itemId;
+		itemIdSet.push(itemId);
 	}
+	
+	
+	Item.find( {_id: {$in: itemIdSet}} , function(err, items){
+       
+		if(err || items == null){
+            console.log("item not found !!!!!!!!!!")
+        }else{
+        	
+        	console.log("--items length -- " + items.length);
+        	
+        	for(var i=0; i<items.length; i++){
+        		
+        		var item = items[i];			console.log("@@1@@  item : " + item);console.log(" ---------------- ");
+        		for(var k=0; k<cart.length; k++){
+        			
+        			var cartItem = cart[k];
+        			console.log("@@2@@  cartItem : " + cartItem);console.log(" ---------------- ");
+        			if(cartItem.itemId == item._id){
+        				
+        				for(var j =0 ; j<item.variants.length; j++){
+                			
+        					var variant = item.variants[j];
+        					console.log("@@3@@  variant : " + variant);console.log(" ---------------- ");
+
+        					if(variant._id == cartItem.variantId){
+                    			console.log("matched !!!!");console.log(" ---------------- ");
+                    			
+                    			I = new Object();
+                    			I.itemId = cartItem.itemId;
+            	        		I.variantId = variant._id;
+            	        		I.name = item.name;
+            	        		I.imgUrl = item.imgUrl;
+            	        		I.size = variant.size;
+            	        		I.quantity = cartItem.quantity;
+            	        		I.price = variant.salePrice;
+            	        		I.cost = I.price * cartItem.quantity;
+            	        		console.log("<<<<<<<<<<<<<<<<");
+            	        		console.log(I);
+            	        		console.log("<<<<<<<<<<<<<<<<");
+            	        		response.items.push(I);
+            	        		response.totalCost = response.totalCost + I.cost;
+            	        		break;
+                    		}
+                    	}
+        			}
+        		}
+        	}
+        	
+        	callback(null, response)
+        }
+        
+			
+    });
 }
+
 
