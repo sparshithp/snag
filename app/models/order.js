@@ -20,6 +20,7 @@ var orderSchema = new Schema({
         quantity: String
     }],
     cost: Number,
+    moneySaved: Number,
     deliverySlot: String
 });
 

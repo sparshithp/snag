@@ -42,9 +42,11 @@ exports.createOrder = function (req, res) {
             if (err) {
                 return res.status(400).send({message: 'Encountered an error. Please try again.'});
             } else {
-                var cost = 0;
+            	var totalMrp = 0;
+            	var cost = 0;
                 for(var i=0; i<orderedItems.length; i++){
-                    cost += orderedItems[i].salePrice * orderedItems[i].quantity;
+                	cost += orderedItems[i].salePrice * orderedItems[i].quantity;
+                	totalMrp += orderedItems[i].mrp * orderedItems[i].quantity;
                 }
                 var order = new Order();
                 order.userId = userId;
@@ -53,12 +55,14 @@ exports.createOrder = function (req, res) {
                 order.items = orderedItems;
                 order.deliverySlot = deliverySlot;
                 order.cost = cost;
+                order.moneySaved = (totalMrp - cost )> 0 ? (totalMrp - cost ): 0;
                 order.save(function (err) {
                     if (err) {
                         return res.status(400).send({message: 'Encountered an error. Please try again.'});
                     }
                     res.status(200).send({order: order});
                     user.cart = [];
+                    user.moneySaved += order.moneySaved;
                     user.save(function(err){
                        if(err){
                            console.log(err);
@@ -78,9 +82,17 @@ exports.listForUser = function(req, res){
     Order.find({userId: userId}, function(err, orders){
        if(err){
            return res.status(404).send({message: 'Encountered an error. Please try again.'});
-
        }
-       res.status(200).send({orders: orders});
+       if(orders == null || orders.length == 0){
+    	   res.send("You do not have any orders yet");
+       }
+       
+       var moneySaved = 0;
+       for(var i=0; i<orders.length; i++){
+    	   if(orders[i].moneySaved != null)
+    		   moneySaved += orders[i].moneySaved;
+       }
+       res.status(200).send({orders: orders, moneySaved: moneySaved});
     });
 };
 
@@ -127,35 +139,51 @@ exports.getOrder = function(req, res){
 function calculateCost(cart, callback) {
 
     var orderedItems = [];
-    var counter = 0;
-    var cost=0;
-    for (var i = 0; i < cart.length; i++) {
-        var orderedItem = {};
-        var item = cart[i];
-        var variantId = item.variantId;
-        orderedItem.itemId = item.itemId;
-        orderedItem.quantity = item.quantity;
-        Item.findById(item.itemId, function (err, item) {
-            if(!item){
-                return res.status(400).send({message: 'Item not found.'});
-            }
-            for (var j = 0; j < item.variants.length; j++) {
-                var variant = item.variants[j];
-                if (variantId == variant._id) {
-                    orderedItem.size = variant.size;
-                    orderedItem.salePrice = variant.salePrice;
-                    orderedItem.mrp = variant.mrp;
-                    cost += variant.salePrice * item.quantity;
-                }
-            }
-            orderedItems.push(orderedItem);
-            counter++;
-            if (counter == cart.length) {
-                callback(null, orderedItems);
-            }
-        });
-    }
+    var itemIdSet = [];
+	var length = cart.length;
+	for(var i=0; i<length; i++){
+		var itemId = cart[i].itemId;
+		itemIdSet.push(itemId);
+	}
+	
+	Item.find( {_id: {$in: itemIdSet}} , function(err, items){
+	       
+		if(err || items == null){
+			return res.status(400).send({message: 'Items not found.'});
+        }else{
+        	
+        	console.log("--items length -- " + items.length);
+        	for(var i=0; i<items.length; i++){
+        		
+        		var item = items[i];
+        		for(var k=0; k<cart.length; k++){
+        			
+        			var cartItem = cart[k];
+        			if(cartItem.itemId == item._id){
+        				
+        				for(var j =0; j<item.variants.length; j++){
+        					var variant = item.variants[j];
+        					if(variant._id == cartItem.variantId){
+        						var orderedItem = {};
+        				        orderedItem.itemId = cartItem.itemId;
+        				        orderedItem.variantId = cartItem.variantId;
+        				        orderedItem.quantity = cartItem.quantity;
+        				        orderedItem.size = variant.size;
+        	                    orderedItem.salePrice = variant.salePrice;
+        	                    orderedItem.mrp = variant.mrp;
+        	                    orderedItems.push(orderedItem);
+            	        		break;
+                    		}
+                    	}
+        			}
+        		}
+        	}
+        	callback(null, orderedItems);
+        }
+    });
+    
 }
+
 function checkValueInArray(value, array) {
     for (var i = 0; i < array.length; i++) {
         if (value == array[i]) {

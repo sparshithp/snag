@@ -1,5 +1,6 @@
 var User = require('../models/user');
 var Item = require('../models/Item');
+var Order = require('../models/order');
 var jwt = require('jsonwebtoken');
 
 exports.signup = function (req, res) {
@@ -116,8 +117,12 @@ exports.signin = function(req, res) {
             if (!isMatch) {
                 return res.status(401).send({ message: 'Invalid credentials' });
             }
+            
+            var welcomeTip = "Welcome " + user.name + ", You have saved "+ user.moneySaved + " so far ";
+            
             res.status(200).send({
                 user: user.email ,
+                welcomeTip: welcomeTip ,
                 token: createToken(req, user)
             });
         });
@@ -291,7 +296,7 @@ exports.viewCart = function(req, res){
 	            res.send({message : "Problem retrieving"});
 	        }else{
 	        	
-	        	getVariant2(user.cart, function(err, response){
+	        	getVariant(user.cart, function(err, response){
 	        		if(err){
 	        			console.log(err);
 	        		}else{
@@ -302,65 +307,45 @@ exports.viewCart = function(req, res){
 	    });
 };
 
-function getVariant2(cart, callback){
+function getVariant(cart, callback){
 	
-	var I = {
-			"itemId" : String,
-			"variantId" : String,
-			"name" : String,
-			"imgUrl" : String,
-			"size" : String,
-			"quantity" : Number,
-			"price" : Number,
-			"cost" : Number
-	}
 	var response = {
-			"items" : [I],
-			"totalCost" : Number
+			"items" : [],
+			"totalCost" : Number,
+			"moneySaved" : Number
 	};
-	
-	response.totalCost =0;
-	response.items = [];
+	response.totalCost= 0;
 	
 	if(cart == null || cart.length == 0){
 		callback(null, response);
 	}
 
 	var itemIdSet = [];
-	
 	var length = cart.length;
 	for(var i=0; i<length; i++){
 		var itemId = cart[i].itemId;
 		itemIdSet.push(itemId);
 	}
-	
-	
+	var totalMrp = 0;
 	Item.find( {_id: {$in: itemIdSet}} , function(err, items){
        
 		if(err || items == null){
-            console.log("item not found !!!!!!!!!!")
+			return res.status(400).send({message: 'Items not found.'});
         }else{
         	
         	console.log("--items length -- " + items.length);
-        	
         	for(var i=0; i<items.length; i++){
         		
-        		var item = items[i];			console.log("@@1@@  item : " + item);console.log(" ---------------- ");
+        		var item = items[i];
         		for(var k=0; k<cart.length; k++){
         			
         			var cartItem = cart[k];
-        			console.log("@@2@@  cartItem : " + cartItem);console.log(" ---------------- ");
         			if(cartItem.itemId == item._id){
         				
         				for(var j =0 ; j<item.variants.length; j++){
-                			
         					var variant = item.variants[j];
-        					console.log("@@3@@  variant : " + variant);console.log(" ---------------- ");
-
         					if(variant._id == cartItem.variantId){
-                    			console.log("matched !!!!");console.log(" ---------------- ");
-                    			
-                    			I = new Object();
+                    			var I = {};
                     			I.itemId = cartItem.itemId;
             	        		I.variantId = variant._id;
             	        		I.name = item.name;
@@ -369,22 +354,20 @@ function getVariant2(cart, callback){
             	        		I.quantity = cartItem.quantity;
             	        		I.price = variant.salePrice;
             	        		I.cost = I.price * cartItem.quantity;
-            	        		console.log("<<<<<<<<<<<<<<<<");
-            	        		console.log(I);
-            	        		console.log("<<<<<<<<<<<<<<<<");
+            	        		
             	        		response.items.push(I);
-            	        		response.totalCost = response.totalCost + I.cost;
+            	        		response.totalCost += I.cost;
+            	        		totalMrp += variant.mrp * cartItem.quantity;;
             	        		break;
                     		}
                     	}
         			}
         		}
         	}
-        	
+        	console.log(totalMrp);
+        	response.moneySaved = (totalMrp - response.totalCost )> 0 ? (totalMrp - response.totalCost ): 0;
         	callback(null, response)
         }
-        
-			
     });
 }
 

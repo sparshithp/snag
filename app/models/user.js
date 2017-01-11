@@ -20,6 +20,7 @@ var userSchema = new Schema({
     admin: Boolean,
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now},
+    moneySaved: {type: Number, default: 0},
     membership: {
         start: Date,
         end: Date
