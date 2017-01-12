@@ -210,16 +210,11 @@ exports.updateProfile = function(req, res){
 
 exports.listAll = function(req, res){
 
-//	User.paginate({}, 1, 3, function(error, pageCount, paginatedResults) {
-//		  if (error) {
-//		    console.error(error);
-//		  } else {
-//		    console.log('Pages:', pageCount);
-//		    res.send({users: user});
-//		  }
-//		});
+//	var perPage = 10 , page = Math.max(0, req.param('page'))
+//	var query = User.find({}).sort('_id').skip(1).limit(2);
 	
-    User.find({}, function(err, user){
+	var query = User.find({});
+	query.exec(function(err, user){
         if(err){
             res.send({message : "Problem retrieving"});
         }else{
@@ -318,6 +313,7 @@ function getVariant(cart, callback){
 	
 	if(cart == null || cart.length == 0){
 		callback(null, response);
+		return;
 	}
 
 	var itemIdSet = [];
