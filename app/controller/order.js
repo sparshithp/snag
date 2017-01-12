@@ -8,6 +8,7 @@ var constants = require('./Constants');
 
 
 exports.createOrder = function (req, res) {
+    console.log(req.body);
     if (!req.body) {
         return res.statusCode(400).send({
             message: "Bad request"
@@ -15,6 +16,7 @@ exports.createOrder = function (req, res) {
     }
     var userId = req.decoded._id;
     var paymentMode = req.body.paymentMode;
+    var notes = req.body.notes;
     var cost = 0;
     var deliverySlot = req.body.deliverySlot;
     if (!paymentMode || !checkValueInArray(paymentMode, constants.paymentModes)) {
@@ -55,6 +57,7 @@ exports.createOrder = function (req, res) {
                 order.items = orderedItems;
                 order.deliverySlot = deliverySlot;
                 order.cost = cost;
+                order.notes = notes;
                 order.moneySaved = (totalMrp - cost )> 0 ? (totalMrp - cost ): 0;
                 order.save(function (err) {
                     if (err) {

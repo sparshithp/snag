@@ -12,6 +12,7 @@ var orderSchema = new Schema({
     status: {type: String, default: "Placed"},
     date: {type: Date, default: Date.now},
     address: String,
+    notes: String,
     items: [{
         itemId: String,
         size: String,
