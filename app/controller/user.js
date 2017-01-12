@@ -295,7 +295,7 @@ exports.viewCart = function(req, res){
 	        		if(err){
 	        			console.log(err);
 	        		}else{
-	        			res.send({cart: response});
+                        return res.status(200).send({cart: response});
 	        		}
 	        	});
 	        }
