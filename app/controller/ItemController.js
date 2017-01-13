@@ -26,7 +26,9 @@ exports.add = function(req, res) {
 
 exports.listAll = function(req, res){
 
-    Item.find({}, function(err, items){
+	var query = Item.find({}).skip(1).limit(2);
+	
+	query.exec(function(err, items){
         if(err){
             res.send({message : "Problem retrieving"});
         }else{
@@ -68,8 +70,6 @@ exports.listByCategory = function (req, res) {
 
 exports.listByBrand = function (req, res) {
     
-	console.log("listByBrand");
-
     var query = Item.find(
         {
             brand: { $regex : new RegExp(req.params.brand, "i") }
@@ -84,4 +84,22 @@ exports.listByBrand = function (req, res) {
         	res.send({items: items});
         }
     });
+};
+
+exports.listByPriceRange = function (req, res) {
+    
+//    var query = Item.find(
+//        {
+//            brand: { $gt: req.param.min, $lt: req.param.max }
+//            
+//        });
+//
+//    query.exec(function (err, items) {
+//        if (err) {
+//            res.send({message: "error"});
+//        } else {
+//        	console.log("found " + items.length);
+//        	res.send({items: items});
+//        }
+//    });
 };

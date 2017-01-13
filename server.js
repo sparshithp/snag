@@ -15,6 +15,7 @@ var User   = require('./app/models/user'); // get our mongoose model
 var userController = require('./app/controller/user');
 var itemController = require('./app/controller/ItemController');
 var orderController = require('./app/controller/order');
+var featuredItemController = require('./app/controller/FeaturedItemController');
 // =================================================================
 // configuration ===================================================
 // =================================================================
@@ -110,11 +111,16 @@ apiRoutes.get('/check', function(req, res) {
 	res.json(req.decoded);
 });
 
+app.get('/featuredItems/items', featuredItemController.getItems);
+app.get('/featuredItems/listAll', featuredItemController.listAll);
+app.post('/featuredItems/add', featuredItemController.add);
+
 app.get('/items/listAll', itemController.listAll);
 app.post('/items/add', itemController.add);
 app.get('/items/getById/:id', itemController.getById);
 app.get('/items/listByCategory/:category', itemController.listByCategory);
 app.get('/items/listByBrand/:brand', itemController.listByBrand);
+app.get('/items/listByBrand/:min/:max', itemController.listByPriceRange);
 
 app.get('/users/listAll', userController.listAll);
 apiRoutes.post('/users/updateProfile', userController.updateProfile);
