@@ -26,7 +26,8 @@ exports.add = function(req, res) {
 
 exports.listAll = function(req, res){
 
-	var query = Item.find({}).skip(1).limit(2);
+	//var query = Item.find({}).skip(1).limit(2);
+	var query = Item.find({});//.skip(1).limit(2);
 	
 	query.exec(function(err, items){
         if(err){
