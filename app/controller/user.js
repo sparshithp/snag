@@ -172,7 +172,9 @@ function createToken(req, user) {
 
 exports.getById = function(req, res){
 
-    User.findById(req.params.id, function(err, user){
+	var userId = req.decoded._id;
+
+    User.findById(userId, function(err, user){
         if(err){
             res.send({message : "Problem retrieving"});
         }else{

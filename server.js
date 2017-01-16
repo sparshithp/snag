@@ -126,7 +126,7 @@ app.get('/users/listAll', userController.listAll);
 apiRoutes.post('/users/updateProfile', userController.updateProfile);
 apiRoutes.post('/users/addToCart', userController.addItemToCart);
 apiRoutes.post('/users/updateCart', userController.updateCart);
-app.get('/users/getById/:id', userController.getById);
+apiRoutes.get('/users/profile', userController.getById);
 apiRoutes.get('/users/viewCart', userController.viewCart);
 apiRoutes.post('/order/create', orderController.createOrder);
 apiRoutes.get('/order/listForUser', orderController.listForUser);
