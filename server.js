@@ -123,7 +123,7 @@ app.get('/items/listByBrand/:brand', itemController.listByBrand);
 app.get('/items/listByBrand/:min/:max', itemController.listByPriceRange);
 
 app.get('/users/listAll', userController.listAll);
-apiRoutes.post('/users/updateProfile', userController.updateProfile);
+apiRoutes.post('/users/editProfile', userController.updateProfile);
 apiRoutes.post('/users/addToCart', userController.addItemToCart);
 apiRoutes.post('/users/updateCart', userController.updateCart);
 apiRoutes.get('/users/profile', userController.getById);

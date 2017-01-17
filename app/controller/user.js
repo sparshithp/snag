@@ -191,12 +191,31 @@ exports.updateProfile = function(req, res){
             res.send({message : "Problem finding user info"});
         }else{
 
-            user.streetAddress = req.body.streetAddress;
-            user.area = req.body.area;
-            user.city = req.body.city;
-            user.zip = req.body.zip;
-            
-            user.phone = req.body.phone;
+        	
+        	if(req.body.streetAddress != null && req.body.streetAddress != ""){
+        		console.log("XXXXX11XXXXXXX");
+            	user.streetAddress = req.body.streetAddress;
+        	}
+        	if(req.body.area != null && req.body.area != ""){
+        		console.log("XXXXX22XXXXXX");
+            	user.area = req.body.area;
+        	}
+        	if(req.body.city != null && req.body.city != ""){
+        		console.log("XXXXX22XXXXXX");
+            	user.city = req.body.city;
+        	}
+        	if(req.body.zip != null && req.body.zip != ""){
+        		console.log("XXXXX33XXXXXX");
+            	user.zip = req.body.zip;
+        	}
+        	if(req.body.name != null && req.body.name != ""){
+        		console.log("XXXXX44XXXXXX");
+            	user.name = req.body.name;
+        	}
+        	if(req.body.phone != null && req.body.phone != ""){
+        		console.log("XXXXXX55XXXXXX");
+            	user.phone = req.body.phone;
+        	}
 
             user.save(function (err) {
                 if (err) {
