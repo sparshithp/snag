@@ -56,7 +56,7 @@ exports.signup = function (req, res) {
         res.status(400).send({message: 'Please enter the correct email.'});
         return;
     }
-    if(password.length <8){
+    if(password.length <6){
         res.status(400).send({message: 'Password length should be minimum 8 characters.'});
         return;
     }
@@ -77,7 +77,7 @@ exports.signup = function (req, res) {
         if(err){
             res.status(400).send({message: 'Network error. Please try again'});
         } else if(existingUser){
-            res.status(400).send({message: 'User already exists'});
+            res.status(400).send({message: 'User already exists !! Please Go Back and login or call customercare number if you have forgotten/reset the password'});
         }else {
             user.save(function (err) {
                 if (err) {
@@ -103,10 +103,12 @@ exports.signin = function(req, res) {
     var email = req.body.email.toLowerCase();
 
     User.findOne({ email: email }, '+password', function(err, user){
+    	console.log(user);
         if(err){
             return res.status(400).send({ message: 'Encountered an error. Please try again' });
         }
         if (!user) {
+        	console.log("asd");
             return res.status(401).send({ message: 'Invalid credentials' });
         }
 
@@ -193,27 +195,21 @@ exports.updateProfile = function(req, res){
 
         	
         	if(req.body.streetAddress != null && req.body.streetAddress != ""){
-        		console.log("XXXXX11XXXXXXX");
             	user.streetAddress = req.body.streetAddress;
         	}
         	if(req.body.area != null && req.body.area != ""){
-        		console.log("XXXXX22XXXXXX");
             	user.area = req.body.area;
         	}
         	if(req.body.city != null && req.body.city != ""){
-        		console.log("XXXXX22XXXXXX");
             	user.city = req.body.city;
         	}
         	if(req.body.zip != null && req.body.zip != ""){
-        		console.log("XXXXX33XXXXXX");
             	user.zip = req.body.zip;
         	}
         	if(req.body.name != null && req.body.name != ""){
-        		console.log("XXXXX44XXXXXX");
             	user.name = req.body.name;
         	}
         	if(req.body.phone != null && req.body.phone != ""){
-        		console.log("XXXXXX55XXXXXX");
             	user.phone = req.body.phone;
         	}
 
