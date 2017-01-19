@@ -77,7 +77,10 @@ exports.signup = function (req, res) {
         if(err){
             res.status(400).send({message: 'Network error. Please try again'});
         } else if(existingUser){
-            res.status(400).send({message: 'User already exists !! Please Go Back and login or call customercare number if you have forgotten/reset the password'});
+            res.status(400).send(
+            		{
+            			messageHeading: 'User already exists !!',
+            			message2: 'Please try again OR Call customercare number if you have forgotten/reset the password'});
         }else {
             user.save(function (err) {
                 if (err) {
