@@ -87,7 +87,7 @@ exports.listForUser = function(req, res){
            return res.status(404).send({message: 'Encountered an error. Please try again.'});
        }
        if(orders == null || orders.length == 0){
-    	   res.send("You do not have any orders yet");
+    	   res.status(200).send({orders: [], moneySaved: 0});
        }
        
        var moneySaved = 0;

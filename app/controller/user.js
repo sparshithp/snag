@@ -283,29 +283,39 @@ exports.addItemToCart = function(req, res){
 
 exports.updateCart = function(req, res){
 	
+	var userId = req.decoded._id;
+	var itemId = req.body.itemId;
+	var variantId = req.body.variantId;
+	var quantity = req.body.quantity;
+	var action = req.body.action;
+
+	User.findById(userId, function(err, user){
+        if(err || user == null){
+            res.send({message : "Problem finding user"});
+        }else{
+        	var carts = user.cart;
+        	var newCarts = [];
+        	carts.forEach(function(cart, index) {
+        		if(itemId == cart.itemId && variantId == cart.variantId){
+        			cart.quantity = quantity;
+        		}else{
+        			newCarts.push(cart);
+        		}
+        	});
+        	if(action == "remove"){
+        		user.cart = newCarts;
+        	}
+        	user.save(function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send({message: 'Error saving. Please try again'});
+                } else {
+                    res.send("Cart updated");
+                }
+            });
+        }
+    });
 	
-	if(req.body.cart == null ){
-		res.send("No cart");
-	}else{
-
-		var userId = req.decoded._id;
-
-		User.findById(userId, function(err, user){
-	        if(err || user == null){
-	            res.send({message : "Problem finding user"});
-	        }else{
-	        	user.cart = req.body.cart;
-	        	user.save(function (err) {
-	                if (err) {
-	                    console.log(err);
-	                    res.status(400).send({message: 'Error saving. Please try again'});
-	                } else {
-	                    res.send("Cart updated");
-	                }
-	            });
-	        }
-	    });
-	}
 };
 
 exports.viewCart = function(req, res){
