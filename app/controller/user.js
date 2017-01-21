@@ -88,7 +88,11 @@ exports.signup = function (req, res) {
                     res.status(400).send({message: 'Error saving. Please try again'});
                 } else {
                     console.log("yoyo");
-                    res.send({token: createToken(req, user)});
+                    var welcomeTip = "Welcome Disciple " + user.name + " Start shopping from The Monk and Start saving soon  ";
+                    res.send({
+                    	token: createToken(req, user),
+                    	welcomeTip: welcomeTip ,
+                    	});
                 }
             });
         }
@@ -122,8 +126,10 @@ exports.signin = function(req, res) {
             if (!isMatch) {
                 return res.status(401).send({ message: 'Invalid credentials' });
             }
-            
-            var welcomeTip = "Welcome " + user.name + ", You have saved "+ user.moneySaved + "Rs so far ";
+            if(user.moneySaved > 0)
+            	var welcomeTip = "Disciple " + user.name + " You have saved "+ user.moneySaved + " Rs so far, Praise The Monk  ";
+            else
+            	var welcomeTip = "Disciple " + user.name + " Start shopping from The Monk and Start saving soon";
             
             res.status(200).send({
                 user: user.email ,

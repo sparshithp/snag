@@ -52,19 +52,40 @@ exports.getById = function(req, res){
 exports.listByCategory = function (req, res) {
     
 	console.log("listByCategory");
-
+	var page = req.params.page;
+	var skip = 9*(page-1);
+	console.log(page);
+	
     var query = Item.find(
         {
             category: { $regex : new RegExp(req.params.category, "i") }
             
-        });
+        }).skip(skip).limit(9);
 
     query.exec(function (err, items) {
         if (err) {
             res.send({message: "error"});
         } else {
         	console.log("found " + items.length);
-        	res.send({items: items});
+        	
+        	 var query2 = Item.find(
+        		        {
+        		            category: { $regex : new RegExp(req.params.category, "i") }
+        		            
+        		        });
+
+        	 query2.exec(function (err, totalItems) {
+        	        if (err) {
+        	            res.send({message: "error"});
+        	        } else {
+        	        	console.log("total Itmes length " + totalItems.length);
+        	        	
+        	        	res.send({
+        	        		items: items,
+        	        		totalItems: totalItems.length
+        	        		});
+        	        }
+        	    });
         }
     });
 };

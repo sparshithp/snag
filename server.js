@@ -118,7 +118,7 @@ app.post('/featuredItems/add', featuredItemController.add);
 app.get('/items/listAll', itemController.listAll);
 app.post('/items/add', itemController.add);
 app.get('/items/getById/:id', itemController.getById);
-app.get('/items/listByCategory/:category', itemController.listByCategory);
+app.get('/items/listByCategory/:category/:page', itemController.listByCategory);
 app.get('/items/listByBrand/:brand', itemController.listByBrand);
 app.get('/items/listByBrand/:min/:max', itemController.listByPriceRange);
 

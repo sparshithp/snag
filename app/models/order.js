@@ -15,6 +15,7 @@ var orderSchema = new Schema({
     notes: String,
     items: [{
         itemId: String,
+        itemName: String,
         size: String,
         salePrice: Number,
         mrp: Number,

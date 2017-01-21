@@ -95,6 +95,7 @@ exports.listForUser = function(req, res){
     	   if(orders[i].moneySaved != null)
     		   moneySaved += orders[i].moneySaved;
        }
+       console.log(moneySaved);
        res.status(200).send({orders: orders, moneySaved: moneySaved});
     });
 };
@@ -169,6 +170,7 @@ function calculateCost(cart, callback) {
         					if(variant._id == cartItem.variantId){
         						var orderedItem = {};
         				        orderedItem.itemId = cartItem.itemId;
+        				        orderedItem.itemName = item.name;
         				        orderedItem.variantId = cartItem.variantId;
         				        orderedItem.quantity = cartItem.quantity;
         				        orderedItem.size = variant.size;
